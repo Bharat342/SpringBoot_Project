@@ -24,7 +24,7 @@ public class AuthService {
 		
 		if(userRepository.existsByUsername(dto.getUsername())) {
 			APIResponse<String> apiResponse = new APIResponse<>();
-			apiResponse.setMessage("Registrtion Failed..");
+			apiResponse.setMessage("Registration Failed..");
 			apiResponse.setStatus(500);
 			apiResponse.setData("User is already exists");
 			return apiResponse;
@@ -32,7 +32,7 @@ public class AuthService {
 		
 		if(userRepository.existsByEmail(dto.getEmail())) {
 			APIResponse<String> apiResponse = new APIResponse<>();
-			apiResponse.setMessage("Registrtion Failed..");
+			apiResponse.setMessage("Registration Failed..");
 			apiResponse.setStatus(500);
 			apiResponse.setData("User is already exists");
 			return apiResponse;
@@ -52,7 +52,7 @@ public class AuthService {
 		userRepository.save(user);
 		
 		APIResponse<String> response = new APIResponse<>();
-		response.setMessage("Registrtion Done..");
+		response.setMessage("Registration Done..");
 		response.setStatus(201);
 		response.setData("User is Registered");
 		
