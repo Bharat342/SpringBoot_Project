@@ -1,16 +1,26 @@
 package com.authservice.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.authservice.service.CustomUserDetailsService;
+
 @Configuration
 @EnableWebSecurity
 public class AppSecurityConfig {
+	
+	@Autowired
+	private CustomUserDetailsService customUserDetailsService;
 	
 	// This annotation tells Spring that the method returns a bean to be managed by the Spring IOC container
 	@Bean  // -> should be use only in configuration file or in Start class because Start class only an Configuration class.
@@ -30,6 +40,7 @@ public class AppSecurityConfig {
 		    .authorizeHttpRequests( auth -> 
 		    auth.requestMatchers(
 		    		"/testing/api/auth/register",
+		    		"/testing/api/auth/login",
 		    		"/v3/api-docs/**",
 		    		"/swagger-ui/**",
 		    		"/swagger-ui.html",
@@ -39,9 +50,31 @@ public class AppSecurityConfig {
 		    );
 		return http.build();
 	}
-
+	
+	// Marks this method as a Spring Bean, so the returned AuthenticationManager will be managed by the Spring container
+	@Bean
+	public AuthenticationManager getAuthManager(AuthenticationConfiguration config) throws Exception {
+	    
+	    // Retrieves the AuthenticationManager from the provided AuthenticationConfiguration.
+	    // This is the standard way in Spring Security 5.7+ to get the default AuthenticationManager,
+	    // which is automatically configured based on your UserDetailsService or AuthenticationProvider.
+	    return config.getAuthenticationManager();
+	}
+	
+	@Bean
+	public AuthenticationProvider authProvider() {
+		
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+		 
+		authProvider.setUserDetailsService(customUserDetailsService);
+		authProvider.setPasswordEncoder(getEncoder()); 
+		
+		return authProvider;
+		
+	}
 
 }
+
 
 /*
 	->	@Bean:
