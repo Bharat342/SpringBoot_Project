@@ -46,8 +46,9 @@ public class AppSecurityConfig {
 		    		"/swagger-ui.html",
 		    		"swagger-resources/**",
 		    		"/webjars/**").permitAll()
+		    .requestMatchers("/api/v1/auth/welcome").hasRole("ADMIN")
 		    .anyRequest().authenticated()
-		    );
+		    ).httpBasic(httpBasic -> {}); // <-- New way to enable HTTP Basic
 		return http.build();
 	}
 	

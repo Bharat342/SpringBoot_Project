@@ -3,6 +3,7 @@ package com.authservice.service;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,11 +32,24 @@ public class CustomUserDetailsService implements UserDetailsService {
 	    // of org.springframework.security.core.userdetails.User, which Spring Security understands.
 	    // Collections.emptyList() means the user has no granted authorities or roles here.
 	    return new org.springframework.security.core.userdetails.User(
-	        userByUsername.getUsername(),     // the username
-	        userByUsername.getPassword(),     // the encoded password
-	        Collections.emptyList()           // an empty list of roles/authorities
-	    );
-	}
+	    	    // Line 1: Creating a new Spring Security User object, which implements UserDetails.
+	    	    // This object is returned from a method like 'loadUserByUsername' in a custom UserDetailsService implementation.
+	    	    
+	    	    userByUsername.getUsername(),     
+	    	    // Line 2: Passes the username from your custom User object (userByUsername) to the Spring Security User.
+	    	    // This is used by Spring Security to identify the user during authentication.
 
+	    	    userByUsername.getPassword(),     
+	    	    // Line 3: Passes the **encoded (hashed)** password from your custom User object.
+	    	    // Spring Security compares this against the submitted password during login (after encoding it too).
+
+	    	    Collections.singleton(new SimpleGrantedAuthority(userByUsername.getRole()))
+	    	    // Line 4: Creates a collection of authorities (roles/permissions) for the user.
+	    	    // `SimpleGrantedAuthority` wraps the user's role (like "ROLE_USER" or "ROLE_ADMIN").
+	    	    // `Collections.singleton(...)` creates an immutable set with just one authority.
+	    	    // Spring Security uses this to determine what the user is allowed to do (authorization).
+	    	);
+
+	}
 
 }
