@@ -15,6 +15,7 @@ import com.authservice.dto.APIResponse;
 import com.authservice.dto.LoginDTO;
 import com.authservice.dto.UserDto;
 import com.authservice.service.AuthService;
+import com.authservice.service.JwtService;
 
 
 @RestController
@@ -26,6 +27,9 @@ public class AuthController {
 	
 	@Autowired
 	private AuthenticationManager authManager;
+	
+	@Autowired
+	private JwtService jwtService;
 	
 	@PostMapping("/register")
 	public ResponseEntity<APIResponse<String>> register(@RequestBody UserDto dto) {
@@ -47,10 +51,16 @@ public class AuthController {
 			
 			Authentication authenticate = authManager.authenticate(token);
 			
+			
 			if(authenticate.isAuthenticated()) {
+				
+				// -> Below I put Breakdown of this 2 lines of code.
+				String jwtToken = jwtService.generateToken(loginDTO.getUsername(),
+						authenticate.getAuthorities().iterator().next().getAuthority());
+				
 				response.setMessage("Login Successful");
 				response.setStatus(200);
-				response.setData("User has Logged..");
+				response.setData(jwtToken);
 				
 				return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
 			}
@@ -69,14 +79,22 @@ public class AuthController {
 	
 }
 
-
-
-
-
-
-
-
-
+			/*
+					// Call the generateToken() method of jwtService to create a JWT for the authenticated user
+					jwtService.generateToken(
+					    
+					    // Get the username from the loginDTO (usually passed from the login form or API body)
+					    loginDTO.getUsername(),
+	
+					    // Get the first authority (role/permission) assigned to the authenticated user
+					    authenticate.getAuthorities()         // Returns a collection of GrantedAuthority objects (e.g., ROLE_USER, ROLE_ADMIN)
+					                .iterator()               // Create an iterator to loop through the authorities
+					                .next()                   // Get the first authority from the iterator
+					                .getAuthority()          // Extract the string value of the authority (e.g., "ROLE_USER")
+					                
+					                // We don't have role data in loginDTO, So that here we are fetching role data from Database using authenticate reference.
+					);
+			 */
 
 
 
