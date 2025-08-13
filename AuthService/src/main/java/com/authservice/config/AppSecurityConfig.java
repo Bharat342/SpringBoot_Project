@@ -12,7 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.authservice.jwt.JwtFilter;
 import com.authservice.service.CustomUserDetailsService;
 
 @Configuration
@@ -21,6 +23,9 @@ public class AppSecurityConfig {
 	
 	@Autowired
 	private CustomUserDetailsService customUserDetailsService;
+	
+	@Autowired
+	private JwtFilter filter;
 	
 	// This annotation tells Spring that the method returns a bean to be managed by the Spring IOC container
 	@Bean  // -> should be use only in configuration file or in Start class because Start class only an Configuration class.
@@ -33,22 +38,27 @@ public class AppSecurityConfig {
 	    // we can use BCryptPasswordEncoder classe's implemented methods.
 	}
 	
+	String[] publicEndPoints = {
+			"/api/auth/register",
+    		"/api/auth/login",
+    		"/v3/api-docs/**",
+    		"/swagger-ui/**",
+    		"/swagger-ui.html",
+    		"swagger-resources/**",
+    		"/webjars/**"
+	};
 	
 	@Bean
 	public SecurityFilterChain securityConfig(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable())
-		    .authorizeHttpRequests( auth -> 
-		    auth.requestMatchers(
-		    		"/testing/api/auth/register",
-		    		"/testing/api/auth/login",
-		    		"/v3/api-docs/**",
-		    		"/swagger-ui/**",
-		    		"/swagger-ui.html",
-		    		"swagger-resources/**",
-		    		"/webjars/**").permitAll()
-		    .requestMatchers("/api/v1/auth/welcome").hasRole("ADMIN")
-		    .anyRequest().authenticated()
-		    ).httpBasic(httpBasic -> {}); // <-- New way to enable HTTP Basic
+		    .authorizeHttpRequests( auth -> {
+		    auth.requestMatchers(publicEndPoints).permitAll()
+		    .requestMatchers("/api/auth/welcome").hasRole("ADMIN")
+		    .anyRequest()
+		    .authenticated();
+		    }).httpBasic(httpBasic -> {}) // <-- New way to enable HTTP Basic
+		    .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class); // This line says whenever an authentication request came before we execute any code when an authentication url.
+	         																		// we are sending it from Postman or an angular it should go to our filter class which(JwtFilter class) 
 		return http.build();
 	}
 	
@@ -86,5 +96,8 @@ public class AppSecurityConfig {
 		
 	->	return new BCryptPasswordEncoder();:
 		This line creates and returns a new instance of BCryptPasswordEncoder, which is a Spring Security implementation of PasswordEncoder. It uses the BCrypt hashing function to securely encode passwords.
+
+    -> ".addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);" This is used in Spring Security configuration to insert a custom filter before an existing filter in the filter chain.
+
  */
 
