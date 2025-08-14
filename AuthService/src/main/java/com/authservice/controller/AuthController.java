@@ -19,7 +19,7 @@ import com.authservice.service.JwtService;
 
 
 @RestController
-@RequestMapping("/testing/api/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 	
 	@Autowired
@@ -61,7 +61,7 @@ public class AuthController {
 				response.setMessage("Login Successful");
 				response.setStatus(200);
 				response.setData(jwtToken);
-				
+								
 				return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
 			}
 			
