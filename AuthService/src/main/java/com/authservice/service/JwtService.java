@@ -34,7 +34,24 @@ public class JwtService {
 	              // Sign the token using HMAC with SHA-256 algorithm and a secret key
 	              .sign(Algorithm.HMAC256(SECRET_KEY));
 	}
-
+	
+	
+	public String validateTokenAndRetrieveSubject(String token) { 
+	    // Create a JWT verifier using the secret key and HMAC256 algorithm.
+	    // This ensures that the token has not been tampered with and is signed with the correct key.
+	    return JWT.require(Algorithm.HMAC256(SECRET_KEY))
+	    
+	              // Build the verifier instance.
+	              .build()
+	              
+	              // Verify the provided token's signature and validity (e.g., expiration, algorithm, etc.).
+	              // If the token is invalid or expired, this will throw an exception.
+	              .verify(token)
+	              
+	              // Extract the 'subject' field from the verified token.
+	              // In JWT, the subject typically represents the user identifier (e.g., username).
+	              .getSubject(); // Subject means the username or user identity.
+	}
 	
 }
 
