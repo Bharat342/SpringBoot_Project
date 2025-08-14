@@ -52,14 +52,7 @@ public class AppSecurityConfig {
 	public SecurityFilterChain securityConfig(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable())
 		    .authorizeHttpRequests( auth -> {
-		    auth.requestMatchers(
-		    		"/api/auth/register",
-		    		"/api/auth/login",
-		    		"/v3/api-docs/**",
-		    		"/swagger-ui/**",
-		    		"/swagger-ui.html",
-		    		"swagger-resources/**",
-		    		"/webjars/**").permitAll()
+		    auth.requestMatchers(publicEndPoints).permitAll()
 		    .requestMatchers("/api/auth/welcome").hasRole("ADMIN")
 		    .anyRequest()
 		    .authenticated();
