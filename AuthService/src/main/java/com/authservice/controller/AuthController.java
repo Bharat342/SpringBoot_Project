@@ -6,14 +6,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.authservice.dto.APIResponse;
 import com.authservice.dto.LoginDTO;
 import com.authservice.dto.UserDto;
+import com.authservice.entity.User;
+import com.authservice.repository.UserRepository;
 import com.authservice.service.AuthService;
 import com.authservice.service.JwtService;
 
@@ -21,6 +25,9 @@ import com.authservice.service.JwtService;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
+	@Autowired
+    private final UserRepository userRepository;
 	
 	@Autowired
 	private AuthService authService;
@@ -30,6 +37,11 @@ public class AuthController {
 	
 	@Autowired
 	private JwtService jwtService;
+	
+
+    AuthController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 	
 	@PostMapping("/register")
 	public ResponseEntity<APIResponse<String>> register(@RequestBody UserDto dto) {
@@ -75,6 +87,11 @@ public class AuthController {
 		
 		return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatus()));
 		
+	}
+	
+	@GetMapping("/get-user")
+	public User getUser(@RequestParam String username) {
+		return userRepository.findByUsername(username);
 	}
 	
 }

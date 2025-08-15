@@ -1,18 +1,17 @@
-package com.authservice;
+package com.microservices1;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-
-import com.authservice.entity.User;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
+@EnableFeignClients
 @EnableDiscoveryClient
-public class AuthServiceApplication {   
+public class Microservices1Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AuthServiceApplication.class, args);
-	
+		SpringApplication.run(Microservices1Application.class, args);
 	}
 
 }
