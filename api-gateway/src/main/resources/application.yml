@@ -17,9 +17,9 @@ spring:
         - id: auth-service-app  # Unique ID for this route
           uri: lb://AUTHSERVICEAPP  # Forward requests to AUTHSERVICEAPP service using load balancing (via Eureka)
           predicates:
-            - Path=/api/auth/**  # Match any request with path starting with /api/auth/
+            - Path=/auth/**  # Match any request with path starting with /api/auth/
           filters:
-            - RewritePath=/api/auth/(?<segment>.*), /${segment}  # Remove /api/auth prefix before forwarding
+            - RewritePath=/auth/(?<segment>.*), /${segment}  # Remove /api/auth prefix before forwarding
 
         # ----------- Route 2: Microservice 1 -----------
         - id: microservice-api-1  # Unique ID for this route
