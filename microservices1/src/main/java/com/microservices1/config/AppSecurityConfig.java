@@ -46,7 +46,7 @@ public class AppSecurityConfig {
 		http.csrf(csrf -> csrf.disable())
 		    .authorizeHttpRequests( auth -> {
 		    auth.requestMatchers(publicEndPoints).permitAll()
-		    .requestMatchers("/api/auth/welcome").hasRole("ADMIN")
+		    .requestMatchers("/welcome").hasRole("ADMIN")
 		    .anyRequest()
 		    .authenticated();
 		    }).httpBasic(httpBasic -> {}) // <-- New way to enable HTTP Basic
